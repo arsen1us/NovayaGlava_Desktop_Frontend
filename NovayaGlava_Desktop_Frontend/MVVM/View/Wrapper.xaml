@@ -1,0 +1,255 @@
+﻿<UserControl x:Class="NovayaGlava_Desktop_Frontend.MVVM.View.Wrapper"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:NovayaGlava_Desktop_Frontend.MVVM.View"
+             xmlns:vm="clr-namespace:NovayaGlava_Desktop_Frontend.MVVM.ViewModel"
+             xmlns:Menu="clr-namespace:NovayaGlava_Desktop_Frontend.Utilities"
+             mc:Ignorable="d" 
+             d:DesignHeight="900" d:DesignWidth="1000">
+    <UserControl.DataContext>
+        <vm:NavigationVM/>
+    </UserControl.DataContext>
+    <Grid Background="White">
+        <ContentControl x:Name="Pages"
+                Content="{Binding CurrentView}"/>
+        <Button Width="50" Height="50" VerticalAlignment="Top"
+        HorizontalAlignment="Left" Click="ButtonClick" Background="White" >
+            <Image Source="C:\Users\gamer\source\repos\NovayaGlava-Desktop\WPFForTest\Images\menu.png" Height="35" Width="35"/>
+        </Button>
+        <Button Name="window_button" Margin="250,0,0,0" Background="Transparent"
+        Visibility="Hidden" Click="ButtonClick">
+
+        </Button>
+        <!-- Pop-up menu -->
+        <Grid Name="PopUpMenu" Background="White" Margin="0,0,0,0" HorizontalAlignment="Left" Width="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="250">
+
+                </RowDefinition>
+                <RowDefinition Height="650">
+
+                </RowDefinition>
+            </Grid.RowDefinitions>
+
+            <!-- Profile information -->
+            <Grid>
+                <Image Source="C:\Users\gamer\source\repos\NovayaGlava-Desktop\WPFForTest\Images\programmer_profile_image.jpg" Margin="62,0,62,83"/>
+                <Grid>
+                    <Label Content="Level" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="164,154,0,0"/>
+                </Grid>
+                <Label Content="UserLogin" HorizontalAlignment="Center" Margin="0,151,0,0" VerticalAlignment="Top"/>
+                <Label Content="Content" HorizontalAlignment="Left" Margin="21,192,0,0" VerticalAlignment="Top"/>
+                <Label Content="Subscriptions" HorizontalAlignment="Center" Margin="0,192,0,0" VerticalAlignment="Top"/>
+                <Label Content="Subscribers" HorizontalAlignment="Left" Margin="178,192,0,0" VerticalAlignment="Top"/>
+                <Label Content="Count" HorizontalAlignment="Left" Margin="28,223,0,0" VerticalAlignment="Top"/>
+                <Label Content="Count" HorizontalAlignment="Center" Margin="0,224,0,0" VerticalAlignment="Top"/>
+                <Label Content="Count" HorizontalAlignment="Left" Margin="195,224,0,0" VerticalAlignment="Top"/>
+            </Grid>
+
+            <!-- Menus buttons -->
+
+            <Grid Grid.Row="1">
+                <StackPanel>
+                    <Menu:Btn Style="{StaticResource BtnStyle}" Height="30"
+                      Command="{Binding FriendsWrapperCommand}">
+                        <Grid>
+                            <Image Margin="1,3,185,10"
+                      Source="C:\Users\gamer\source\repos\NovayaGlava-Desktop\WPFForTest\Images\friends.png">
+                            </Image>
+                            <Label Content="Друзья"
+                      HorizontalAlignment="Left"
+                      Margin="49,0,0,7"
+                      VerticalAlignment="Bottom"
+                      FontSize="20"/>
+                        </Grid>
+                    </Menu:Btn>
+                    <Menu:Btn Style="{StaticResource BtnStyle}" Height="30"
+                      Command="{Binding ChatCommand}">
+                        <Grid>
+                            <Image Margin="1,3,185,10"
+                      Source="C:\Users\gamer\source\repos\NovayaGlava-Desktop\WPFForTest\Images\message.png">
+                            </Image>
+                            <Label Content="Мессенджер"
+                      HorizontalAlignment="Left"
+                      Margin="49,0,0,0"
+                      VerticalAlignment="Center"
+                      FontSize="20"/>
+                        </Grid>
+                    </Menu:Btn>
+                    <Menu:Btn Style="{StaticResource BtnStyle}" Height="30"
+                      Command="{Binding CompaniesCommand}">
+                        <Grid>
+                            <Image Margin="1,3,185,10"
+                      Source="C:\Users\gamer\source\repos\NovayaGlava-Desktop\WPFForTest\Images\companies.png">
+                            </Image>
+                            <Label Content="Компании"
+                      HorizontalAlignment="Left"
+                      Margin="49,0,0,0"
+                      VerticalAlignment="Center"
+                      FontSize="20"/>
+                        </Grid>
+                    </Menu:Btn>
+                    <Menu:Btn Style="{StaticResource BtnStyle}" Height="30"
+                      Command="{Binding NewsCommand}">
+                        <Grid>
+                            <Image Margin="1,3,185,10"
+                      Source="C:\Users\gamer\source\repos\NovayaGlava-Desktop\WPFForTest\Images\news.png">
+                            </Image>
+                            <Label Content="Лента"
+                      HorizontalAlignment="Left"
+                      Margin="49,0,0,0"
+                      VerticalAlignment="Center"
+                      FontSize="20"/>
+                        </Grid>
+                    </Menu:Btn>
+                    <Menu:Btn Style="{StaticResource BtnStyle}" Height="30"
+                      Command="{Binding ContentCommand}">
+                        <Grid>
+                            <Image Margin="1,3,185,10"
+                      Source="C:\Users\gamer\source\repos\NovayaGlava-Desktop\WPFForTest\Images\content.png">
+                            </Image>
+                            <Label Content="Контент"
+                      HorizontalAlignment="Left"
+                      Margin="49,0,0,0"
+                      VerticalAlignment="Center"
+                      FontSize="20"/>
+                        </Grid>
+                    </Menu:Btn>
+                    <Menu:Btn Style="{StaticResource BtnStyle}" Height="30"
+                      Command="{Binding FavoriteCommand}">
+                        <Grid>
+                            <Image Margin="1,3,185,10"
+                      Source="C:\Users\gamer\source\repos\NovayaGlava-Desktop\WPFForTest\Images\favorite.png">
+                            </Image>
+                            <Label Content="Избранное"
+                      HorizontalAlignment="Left"
+                      Margin="49,0,0,0"
+                      VerticalAlignment="Center"
+                      FontSize="20"/>
+                        </Grid>
+                    </Menu:Btn>
+                    <Menu:Btn Style="{StaticResource BtnStyle}" Height="30"
+                      Command="{Binding SettingsCommand}">
+                        <Grid>
+                            <Image Margin="1,3,185,10"
+                      Source="C:\Users\gamer\source\repos\NovayaGlava-Desktop\WPFForTest\Images\settings.png">
+                            </Image>
+                            <Label Content="Настройки"
+                      HorizontalAlignment="Left"
+                      Margin="49,0,0,0"
+                      VerticalAlignment="Center"
+                      FontSize="20"/>
+                        </Grid>
+                    </Menu:Btn>
+                    <Menu:Btn Style="{StaticResource BtnStyle}" Height="30"
+                      Command="{Binding LevelCommand}">
+                        <Grid>
+                            <Image Margin="1,3,185,10"
+                      Source="C:\Users\gamer\source\repos\NovayaGlava-Desktop\WPFForTest\Images\level.png">
+                            </Image>
+                            <Label Content="Уровень"
+                      HorizontalAlignment="Left"
+                      Margin="49,0,0,0"
+                      VerticalAlignment="Center"
+                      FontSize="20"/>
+                        </Grid>
+                    </Menu:Btn>
+                    <Menu:Btn Style="{StaticResource BtnStyle}" Height="30"
+                      Command="{Binding BalanceCommand}">
+                        <Grid>
+                            <Image Margin="1,3,185,10"
+                      Source="C:\Users\gamer\source\repos\NovayaGlava-Desktop\WPFForTest\Images\balance.png">
+                            </Image>
+                            <Label Content="Баланс"
+                      HorizontalAlignment="Left"
+                      Margin="49,0,0,0"
+                      VerticalAlignment="Center"
+                      FontSize="20"/>
+                        </Grid>
+                    </Menu:Btn>
+                    <Menu:Btn Style="{StaticResource BtnStyle}" Height="30"
+                      Command="{Binding QuitCommand}">
+                        <Grid>
+                            <Image Margin="1,3,185,10"
+                      Source="C:\Users\gamer\source\repos\NovayaGlava-Desktop\WPFForTest\Images\quit.png">
+                            </Image>
+                            <Label Content="Выход"
+                      HorizontalAlignment="Left"
+                      Margin="49,0,0,0"
+                      VerticalAlignment="Center"
+                      FontSize="20"/>
+                        </Grid>
+                    </Menu:Btn>
+                    <Menu:Btn Style="{StaticResource BtnStyle}" Height="30"
+                      Command="{Binding ProfileSettingsCommand}">
+                        <Grid>
+                            <Image Margin="1,3,185,10"
+                      Source="C:\Users\gamer\source\repos\NovayaGlava-Desktop\WPFForTest\Images\profile_settings.png">
+                            </Image>
+                            <Label Content="Настройки профиля"
+                      HorizontalAlignment="Left"
+                      Margin="49,0,0,0"
+                      VerticalAlignment="Center"
+                      FontSize="20"/>
+                        </Grid>
+                    </Menu:Btn>
+                    <Menu:Btn Style="{StaticResource BtnStyle}" Height="30"
+                      Command="{Binding RegistrationCommand}">
+                        <Grid>
+                            <Image Margin="1,3,185,10"
+                      Source="C:\Users\gamer\source\repos\NovayaGlava-Desktop\WPFForTest\Images\registration.png">
+                            </Image>
+                            <Label Content="Регистрация"
+                      HorizontalAlignment="Left"
+                      Margin="49,0,0,0"
+                      VerticalAlignment="Center"
+                      FontSize="20"/>
+                        </Grid>
+                    </Menu:Btn>
+                    <Menu:Btn Style="{StaticResource BtnStyle}" Height="30"
+                      Command="{Binding AuthorizationCommand}">
+                        <Grid>
+                            <Image Margin="1,3,185,10"
+                      Source="C:\Users\gamer\source\repos\NovayaGlava-Desktop\WPFForTest\Images\login.png">
+                            </Image>
+                            <Label Content="Авторизация"
+                      HorizontalAlignment="Left"
+                      Margin="49,0,0,0"
+                      VerticalAlignment="Center"
+                      FontSize="20"/>
+                        </Grid>
+                    </Menu:Btn>
+                    <Menu:Btn Style="{StaticResource BtnStyle}" Height="30"
+                      Command="{Binding ProfileCommand}">
+                        <Grid>
+                            <Image Margin="1,3,185,10"
+                      Source="C:\Users\gamer\source\repos\NovayaGlava-Desktop\WPFForTest\Images\login.png">
+                            </Image>
+                            <Label Content="Profile"
+                      HorizontalAlignment="Left"
+                      Margin="49,0,0,0"
+                      VerticalAlignment="Center"
+                      FontSize="20"/>
+                        </Grid>
+                    </Menu:Btn>
+
+                    <Menu:Btn Style="{StaticResource BtnStyle}" Height="30"
+                      Command="{Binding WrapperCommand}">
+                        <Grid>
+                            <Image Margin="1,3,185,10"
+                      Source="C:\Users\gamer\source\repos\NovayaGlava-Desktop\WPFForTest\Images\login.png">
+                            </Image>
+                            <Label Content="Wrapper"
+                      HorizontalAlignment="Left"
+                      Margin="49,0,0,0"
+                      VerticalAlignment="Center"
+                      FontSize="20"/>
+                        </Grid>
+                    </Menu:Btn>
+                </StackPanel>
+            </Grid>
+        </Grid>
+    </Grid>
+</UserControl>

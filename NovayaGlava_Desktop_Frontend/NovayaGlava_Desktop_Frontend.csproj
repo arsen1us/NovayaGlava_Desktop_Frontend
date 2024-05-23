@@ -8,4 +8,23 @@
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="MVVM\ViewModel\temp\" />
+    <Folder Include="MVVM\View\temp\" />
+    <Folder Include="StaticFiles\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="8.0.5" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client.Core" Version="8.0.5" />
+    <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="8.0.5" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="ClassLibForNovayaGlava_Desktop">
+      <HintPath>..\..\ClassLibForNovayaGlava_Desktop\ClassLibForNovayaGlava_Desktop\obj\Debug\net8.0\ClassLibForNovayaGlava_Desktop.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

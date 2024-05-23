@@ -1,0 +1,109 @@
+﻿<UserControl x:Class="NovayaGlava_Desktop_Frontend.MVVM.View.Chat"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:NovayaGlava_Desktop_Frontend.MVVM.View"
+             xmlns:vm="clr-namespace:NovayaGlava_Desktop_Frontend.MVVM.ViewModel"
+             mc:Ignorable="d" 
+             d:DesignHeight="900" d:DesignWidth="1000">
+    <UserControl.DataContext>
+        <vm:ChatVM/>
+    </UserControl.DataContext>
+    <Grid Background="White">
+        <!-- Grid for main contant -->
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="300"/>
+                <ColumnDefinition Width="700"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Grid for friends list -->
+            <Grid>
+                <!-- UpdateSourceTrigger - проверка UserName на null || Empty -->
+                <ListBox Margin="0,41,0,0" SelectedItem="{Binding SelectedChat}" ItemsSource="{Binding Chats}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <Image Source="C:\Users\gamer\source\repos\NovayaGlava-Desktop\WPFForTest\Images\default_avatar.png"
+                               Width="50" Height="50">
+                                </Image>
+                                <TextBlock Text="{Binding _id}" Width="100" Height="50"></TextBlock>
+                                <TextBlock Text="{Binding CompanionNickName}" Width="100" Height="50"></TextBlock>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+
+                <TextBox HorizontalAlignment="Left" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="194" Height="41" Margin="45,0,0,0"/>
+                <Image HorizontalAlignment="Left" Height="40" 
+               VerticalAlignment="Top" Width="40"
+               Source="C:\Users\gamer\source\repos\NovayaGlava-Desktop\WPFForTest\Images\search.png"/>
+                <Button Content="Search" HorizontalAlignment="Left" 
+                Margin="239,0,0,0" VerticalAlignment="Top" Height="41" Width="61"/>
+                <StackPanel Margin="0,41,0,0">
+
+                </StackPanel>
+
+            </Grid>
+
+            <!-- StackPanel for chat -->
+
+            <!-- StackPanel for InputBox and SendButton -->
+
+            <!-- StackPanel for InputBox and SendButton -->
+
+            <Grid Grid.Column="1" Margin="0,0,0,0">
+                <Grid>
+                    <StackPanel>
+                        <ListBox ItemsSource="{Binding Messages}"
+                    Width="700" Margin="0,0,0,0" Height="850">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Vertical">
+                                        <TextBlock Text="{Binding Content}" Width="200" Height="30"/>
+                                        <TextBlock Text="{Binding TimeStamp}" Width="200" Height="30"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <Button Command="{Binding OpenFileDialogCommand}"
+                        Content="Button" HorizontalAlignment="Right" 
+                        Margin="0,0,0,0" Width="80" Height="50" VerticalAlignment="Bottom"/>
+                        <TextBox Height="50" Width="550" VerticalAlignment="Bottom" Text="{Binding Message}"></TextBox>
+                        <Button Command="{Binding SendMessageCommand}"
+                    Content="Button" 
+                    VerticalAlignment="Bottom" Height="50" Width="70"/>
+                    </StackPanel>
+                </Grid>
+            </Grid>
+
+            <!-- Хз, что за спикок -->
+
+            <!--<ListView ItemsSource="{Binding Messages}" Height="370"/>-->
+
+            <!-- Элемент списка людей, которым можно написать -->
+
+            <!--<Button Command="{Binding ConnectToServerCommand}"
+            HorizontalAlignment="Center" Margin="0,154,0,0" 
+            VerticalAlignment="Top" Height="77" Width="200">
+        <Grid Height="77" Width="200">
+            <Image Margin="6,18,154,19"
+                   Height="40"
+                   Width="40"
+                   Source="C:\Users\gamer\source\repos\WPFForTest\WPFForTest\Images\programmer_profile_image.jpg">
+
+            </Image>
+            <TextBlock Text="arseniy"  Margin="51,12,109,47"></TextBlock>
+            <TextBlock Text="Lvl" Margin="96,12,85,45"></TextBlock>
+            <TextBlock Text="LastReceivedMessage" Margin="51,35,29,22"></TextBlock>
+            <TextBlock Text="LRM Time" Margin="141,8,0,49"></TextBlock>
+        </Grid>
+
+    </Button>-->
+
+        </Grid>
+    </Grid>
+</UserControl>
