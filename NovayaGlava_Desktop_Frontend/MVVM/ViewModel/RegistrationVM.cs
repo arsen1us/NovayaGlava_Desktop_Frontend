@@ -1,4 +1,6 @@
-﻿using System;
+﻿using ClassLibForNovayaGlava_Desktop;
+using ClassLibForNovayaGlava_Desktop.UserModel;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,6 +20,7 @@ using NovayaGlava_Desktop_Frontend.FileHandlers;
 using NovayaGlava_Desktop_Frontend.CacheHandlers;
 using NovayaGlava_Desktop_Frontend.Utilities;
 using ClassLibForNovayaGlava_Desktop;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace NovayaGlava_Desktop_Frontend.MVVM.ViewModel
 {
@@ -45,6 +48,7 @@ namespace NovayaGlava_Desktop_Frontend.MVVM.ViewModel
         IDistributedCache _cache;
         UserIdHandler _userIdHandler;
         HttpClient _client;
+        public IServiceProvider ServiceProvider { get; private set; }
 
         public RegistrationVM()
         {
@@ -77,8 +81,8 @@ namespace NovayaGlava_Desktop_Frontend.MVVM.ViewModel
             {
                 //WrapperVM wrapperVM = new WrapperVM();
                 //Wrapper wrapperView = new Wrapper();
-                MainWindow mw = new MainWindow();
-                mw.Show();
+                var mainWindow = ServiceProvider.GetRequiredService<MainWindow>();
+                mainWindow.Show();
             }
         }
 
@@ -96,7 +100,7 @@ namespace NovayaGlava_Desktop_Frontend.MVVM.ViewModel
                 Password = Password,
             };
             string jsonUser = JsonConvert.SerializeObject(user);
-            HttpResponseMessage response = await _client.PostAsJsonAsync("https://localhost:7142/api/users/registration/localdb", jsonUser);
+            HttpResponseMessage response = await _client.PostAsJsonAsync("https://localhost:7245/api/users/registration/localdb", jsonUser);
 
             if (response.StatusCode != HttpStatusCode.OK)
                 MessageBox.Show("Не удалось зарегистрировать нового пользователя");
@@ -110,7 +114,7 @@ namespace NovayaGlava_Desktop_Frontend.MVVM.ViewModel
                 //Сохранить айди юзера в кэше
                 _userIdHandler.SetToCache(user._id);
 
-                MainWindow mainWindow = new MainWindow();
+                var mainWindow = ServiceProvider.GetRequiredService<MainWindow>();
                 mainWindow.Show();
             }
         }

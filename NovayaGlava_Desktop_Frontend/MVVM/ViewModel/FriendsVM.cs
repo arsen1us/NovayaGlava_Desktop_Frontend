@@ -1,5 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System.Collections.ObjectModel;
+using ClassLibForNovayaGlava_Desktop;
+using ClassLibForNovayaGlava_Desktop.UserModel;
 using System.ComponentModel;
 using System.IO;
 using System.Net;
@@ -12,7 +14,6 @@ using System.Windows.Controls;
 using NovayaGlava_Desktop_Frontend.FileHandlers;
 using NovayaGlava_Desktop_Frontend.CacheHandlers;
 using NovayaGlava_Desktop_Frontend.Utilities;
-using ClassLibForNovayaGlava_Desktop;
 
 
 namespace NovayaGlava_Desktop_Frontend.MVVM.ViewModel
@@ -21,7 +22,18 @@ namespace NovayaGlava_Desktop_Frontend.MVVM.ViewModel
     {
         private string _inputSearchString { get; set; }
         private UserModel _selectedFriend { get; set; }
-        private UserModel _selectedUser { get; set; }
+
+        private int _friendsCount;
+        public int FrindsCount
+        {
+            get => _friendsCount;
+            set
+            {
+                _friendsCount = value;
+                OnPropertyChanged(nameof(FrindsCount));
+            }
+        }
+
 
         public ObservableCollection<UserModel> Friends { get; set; }
         public ObservableCollection<UserModel> Users { get; set; }
@@ -32,6 +44,7 @@ namespace NovayaGlava_Desktop_Frontend.MVVM.ViewModel
         public RelayCommand PrintCurrentUser { get; set; }
         public RelayCommand SearchUsersCommand { get; set; }
         public RelayCommand ResetUsersCommand { get; set; }
+
         // Создание нового чата
         public RelayCommand CreateNewChatCommand { get; set; }
 
@@ -64,19 +77,6 @@ namespace NovayaGlava_Desktop_Frontend.MVVM.ViewModel
             }
         }
 
-        // Выбранный юзер из списка Users
-        public UserModel SelectedUser
-        {
-            get
-            {
-                return _selectedUser;
-            }
-            set
-            {
-                _selectedUser = value;
-            }
-        }
-
         // Строка ввода для поиска друзей или юзеров
         public string InputSearchString 
         {
@@ -95,15 +95,16 @@ namespace NovayaGlava_Desktop_Frontend.MVVM.ViewModel
         private async Task GetFriendsListByIdLocalDb()
         {
             string userId = _userIdHandler.GetFromCache();
-            HttpResponseMessage response = await _client.GetAsync($"https://localhost:7142/api/users/usersById/getFriendsList/localdb?userId={userId}");
+            HttpResponseMessage response = await _client.GetAsync($"https://localhost:7245/api/users/usersById/getFriendsList/localdb?userId={userId}");
             if (!response.IsSuccessStatusCode)
                 MessageBox.Show("Не удалось получить список друзей");
             else
             {
                 string jsonFriendsList = await response.Content.ReadAsStringAsync();
                 List<UserModel> friendsList = JsonConvert.DeserializeObject<List<UserModel>>(jsonFriendsList);
+
                 foreach(var friend in friendsList)
-                    Application.Current.Dispatcher.Invoke(() => Friends.Add(friend));
+                    Friends.Add(friend);
             }
         }
 
@@ -122,7 +123,7 @@ namespace NovayaGlava_Desktop_Frontend.MVVM.ViewModel
         // Получить всех пользователей из локальной базы данных
         public async Task GetAllUsersLocalDb()
         {
-            HttpResponseMessage response = await _client.GetAsync("https://localhost:7142/api/users/allUsers/localdb");
+            HttpResponseMessage response = await _client.GetAsync("https://localhost:7245/api/users/allUsers/localdb");
 
             if (response.StatusCode != HttpStatusCode.OK)
                 MessageBox.Show("Не удалось получить список из всех пользователей из локальной базы данных");
@@ -144,7 +145,7 @@ namespace NovayaGlava_Desktop_Frontend.MVVM.ViewModel
             else
             {
                 ResetUsers();
-                HttpResponseMessage response = await _client.GetAsync($"https://localhost:7142/api/users/searchFriends/localdb?input={_inputSearchString}");
+                HttpResponseMessage response = await _client.GetAsync($"https://localhost:7245/api/users/searchFriends/localdb?input={_inputSearchString}");
 
                 if (!response.IsSuccessStatusCode)
                     MessageBox.Show("Не удалось получить пользователей в процессе поиска");
@@ -171,7 +172,7 @@ namespace NovayaGlava_Desktop_Frontend.MVVM.ViewModel
             List<string> users = new List<string> { userId, SelectedFriend._id };
             
             string jsonChat = JsonConvert.SerializeObject(users);
-            HttpResponseMessage response = await _client.PostAsJsonAsync("https://localhost:7142/api/chat/addChat/localdb", jsonChat);
+            HttpResponseMessage response = await _client.PostAsJsonAsync("https://localhost:7245/api/chat/addChat/localdb", jsonChat);
             if (response.StatusCode != HttpStatusCode.OK)
                 MessageBox.Show("Не удалось добавить новый чат в локальную бд");
             else

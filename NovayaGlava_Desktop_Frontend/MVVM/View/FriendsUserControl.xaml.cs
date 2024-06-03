@@ -16,11 +16,11 @@ using System.Windows.Shapes;
 namespace NovayaGlava_Desktop_Frontend.MVVM.View
 {
     /// <summary>
-    /// Логика взаимодействия для RegistrationPage.xaml
+    /// Логика взаимодействия для FriendsUserControl.xaml
     /// </summary>
-    public partial class RegistrationPage : Page
+    public partial class FriendsUserControl : UserControl
     {
-        public RegistrationPage()
+        public FriendsUserControl()
         {
             InitializeComponent();
         }

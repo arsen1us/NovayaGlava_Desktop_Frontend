@@ -16,11 +16,11 @@ using System.Windows.Shapes;
 namespace NovayaGlava_Desktop_Frontend.MVVM.View
 {
     /// <summary>
-    /// Логика взаимодействия для News.xaml
+    /// Логика взаимодействия для LoginWindow.xaml
     /// </summary>
-    public partial class News : UserControl
+    public partial class LoginWindow : UserControl
     {
-        public News()
+        public LoginWindow()
         {
             InitializeComponent();
         }

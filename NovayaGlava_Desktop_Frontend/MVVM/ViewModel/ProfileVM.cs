@@ -1,4 +1,6 @@
 ﻿using System;
+using ClassLibForNovayaGlava_Desktop;
+using ClassLibForNovayaGlava_Desktop.UserModel;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -12,7 +14,6 @@ using System.IO;
 using NovayaGlava_Desktop_Frontend.FileHandlers;
 using NovayaGlava_Desktop_Frontend.CacheHandlers;
 using NovayaGlava_Desktop_Frontend.Utilities;
-using ClassLibForNovayaGlava_Desktop;
 
 namespace NovayaGlava_Desktop_Frontend.MVVM.ViewModel
 {
@@ -63,7 +64,7 @@ namespace NovayaGlava_Desktop_Frontend.MVVM.ViewModel
             HttpClient client = new HttpClient();
             string userId = _userIdHandler.GetFromCache();
 
-            HttpResponseMessage response = await client.GetAsync($"https://localhost:7142/api/users/userById/localdb?userId={userId}");
+            HttpResponseMessage response = await client.GetAsync($"https://localhost:7245/api/users/userById/localdb?userId={userId}");
 
             if (!response.IsSuccessStatusCode)
             {

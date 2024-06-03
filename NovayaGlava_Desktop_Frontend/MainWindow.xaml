@@ -6,9 +6,132 @@
         xmlns:local="clr-namespace:NovayaGlava_Desktop_Frontend"
         xmlns:vm="clr-namespace:NovayaGlava_Desktop_Frontend.MVVM.ViewModel"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Width="800" Height="600">
+    <Window.DataContext>
+        <vm:MainWindowViewModel/>
+    </Window.DataContext>
     
-    <Grid>
-        <Frame x:Name="MainFrame" NavigationUIVisibility="Hidden"/>
+    <!-- Стили для MainWindow -->
+    <Window.Resources>
+        <Style x:Key="NoHighlightButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="LightGray"/>
+            <Setter Property="BorderBrush" Value="Gray"/>
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <!-- Отключаем изменение визуального состояния при наведении -->
+                                <Setter Property="Background" Value="LightGray"/>
+                                <Setter Property="BorderBrush" Value="Gray"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="PressEffectButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="LightGray"/>
+            <Setter Property="BorderBrush" Value="Gray"/>
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="DarkGray"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+
+    <Grid Background="White">
+        <Frame Name="MainFrame" Content="Frame" Margin="0,0,0,0"/>
+        <ContentControl Content="{Binding CurrentView}" Margin="0,35,0,0"/>
+        <DockPanel Name="ContentPlacer" LastChildFill="False" Margin="0,0,0,0">
+            <StackPanel Name="MenuPanel" Background="White"  
+                        DockPanel.Dock="Left"  Orientation="Vertical" Width="0" Margin="0,0,0,0">
+                <StackPanel>
+                    <Button Command="{Binding ShowFriendsViewCommand}" Margin="0, 0, 0, 0"  Background="White" BorderBrush="White" FontSize="20" FontFamily="Calibri" HorizontalAlignment="Left">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Width="200">
+                            <Image Source="C:\Users\gamer\source\repos\NovayaGlava\NovayaGlava_Desktop_Frontend\NovayaGlava_Desktop_Frontend\Images\friends.png" Width="20" Height="20" Margin="5, 5, 5, 5"/>
+                            <TextBlock Text="Search for friends" Height="20" />
+                        </StackPanel>
+                    </Button>
+                    <Button Command="{Binding ShowChatViewCommand}" Margin="0, 0, 0, 0"  Background="White" BorderBrush="White" FontSize="20" FontFamily="Calibri" HorizontalAlignment="Left">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Width="200">
+                            <Image Source="C:\Users\gamer\source\repos\NovayaGlava\NovayaGlava_Desktop_Frontend\NovayaGlava_Desktop_Frontend\Images\message.png" Width="20" Height="20" Margin="5, 5, 5, 5"/>
+                            <TextBlock Text="Messenger" Height="20" />
+                        </StackPanel>
+                    </Button>
+                    <Button Command="{Binding ShowFirstViewCommand}" Margin="0, 0, 0, 0"  Background="White" BorderBrush="White" FontSize="20" FontFamily="Calibri" HorizontalAlignment="Left">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Width="200">
+                            <Image Source="C:\Users\gamer\source\repos\NovayaGlava\NovayaGlava_Desktop_Frontend\NovayaGlava_Desktop_Frontend\Images\companies.png" Width="20" Height="20" Margin="5, 5, 5, 5"/>
+                            <TextBlock Text="Companies" Height="20" />
+                        </StackPanel>
+                    </Button>
+                    <Button Command="{Binding ShowNewsViewCommand}" Margin="0, 0, 0, 0"  Background="White" BorderBrush="White" FontSize="20" FontFamily="Calibri" HorizontalAlignment="Left">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Width="200">
+                            <Image Source="C:\Users\gamer\source\repos\NovayaGlava\NovayaGlava_Desktop_Frontend\NovayaGlava_Desktop_Frontend\Images\news.png" Width="20" Height="20" Margin="5, 5, 5, 5"/>
+                            <TextBlock Text="News" Height="20" />
+                        </StackPanel>
+                    </Button>
+                    <Button Command="{Binding ShowFirstViewCommand}" Margin="0, 0, 0, 0"  Background="White" BorderBrush="White" FontSize="20" FontFamily="Calibri" HorizontalAlignment="Left">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Width="200">
+                            <Image Source="C:\Users\gamer\source\repos\NovayaGlava\NovayaGlava_Desktop_Frontend\NovayaGlava_Desktop_Frontend\Images\content.png" Width="20" Height="20" Margin="5, 5, 5, 5"/>
+                            <TextBlock Text="Content" Height="20" />
+                        </StackPanel>
+                    </Button>
+                    <Button Command="{Binding ShowFirstViewCommand}" Margin="0, 0, 0, 0"  Background="White" BorderBrush="White" FontSize="20" FontFamily="Calibri" HorizontalAlignment="Left">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Width="200">
+                            <Image Source="C:\Users\gamer\source\repos\NovayaGlava\NovayaGlava_Desktop_Frontend\NovayaGlava_Desktop_Frontend\Images\favorite.png" Width="20" Height="20" Margin="5, 5, 5, 5"/>
+                            <TextBlock Text="Favorite" Height="20" />
+                        </StackPanel>
+                    </Button>
+                    <Button Command="{Binding ShowFirstViewCommand}" Margin="0, 0, 0, 0"  Background="White" BorderBrush="White" FontSize="20" FontFamily="Calibri" HorizontalAlignment="Left">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Width="200">
+                            <Image Source="C:\Users\gamer\source\repos\NovayaGlava\NovayaGlava_Desktop_Frontend\NovayaGlava_Desktop_Frontend\Images\settings.png" Width="20" Height="20" Margin="5, 5, 5, 5"/>
+                            <TextBlock Text="Settings" Height="20" />
+                        </StackPanel>
+                    </Button>
+                    <Button Command="{Binding ShowFirstViewCommand}" Margin="0, 0, 0, 0"  Background="White" BorderBrush="White" FontSize="20" FontFamily="Calibri" HorizontalAlignment="Left">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Width="200">
+                            <Image Source="C:\Users\gamer\source\repos\NovayaGlava\NovayaGlava_Desktop_Frontend\NovayaGlava_Desktop_Frontend\Images\level.png" Width="20" Height="20" Margin="5, 5, 5, 5"/>
+                            <TextBlock Text="Level" Height="20" />
+                        </StackPanel>
+                    </Button>
+                    <Button Command="{Binding ShowFirstViewCommand}" Margin="0, 0, 0, 0"  Background="White" BorderBrush="White" FontSize="20" FontFamily="Calibri" HorizontalAlignment="Left">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Width="200">
+                            <Image Source="C:\Users\gamer\source\repos\NovayaGlava\NovayaGlava_Desktop_Frontend\NovayaGlava_Desktop_Frontend\Images\balance.png" Width="20" Height="20" Margin="5, 5, 5, 5"/>
+                            <TextBlock Text="Balance" Height="20" />
+                        </StackPanel>
+                    </Button>
+                    <Button Command="{Binding ShowFirstViewCommand}" Margin="0, 0, 0, 0"  Background="White" BorderBrush="White" FontSize="20" FontFamily="Calibri" HorizontalAlignment="Left">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Width="200">
+                            <Image Source="C:\Users\gamer\source\repos\NovayaGlava\NovayaGlava_Desktop_Frontend\NovayaGlava_Desktop_Frontend\Images\quit.png" Width="20" Height="20" Margin="5, 5, 5, 5"/>
+                            <TextBlock Text="Quit" Height="20" />
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </StackPanel>
+        </DockPanel>
+        
+        <Button Name="OpenButton" HorizontalAlignment="Left" VerticalAlignment="Top" Click="ToggleMenu_Click" Visibility="Visible" Width="35" Height="35">
+            <Image Source="C:\Users\gamer\source\repos\NovayaGlava\NovayaGlava_Desktop_Frontend\NovayaGlava_Desktop_Frontend\Images\menu.png"/>
+        </Button>
+
+        <Button Name="CloseButton" Style="{StaticResource NoHighlightButtonStyle}" Margin="200,0,0,0" Click="ToggleMenu_Click"
+        Visibility="Hidden" Background="Transparent" BorderBrush="Transparent"/>
     </Grid>
 </Window>

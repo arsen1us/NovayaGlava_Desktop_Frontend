@@ -28,7 +28,7 @@ namespace NovayaGlava_Desktop_Frontend
                     return _connection;
                 else
                 {
-                    _connection = new HubConnectionBuilder().WithUrl("wss://localhost:7142/chatHub").Build();
+                    _connection = new HubConnectionBuilder().WithUrl("wss://localhost:7245/chatHub").Build();
 
                     // Обработка полученного ответа от сервера
                     _connection.On<string, string>("ReceiveMessage", (userNickName, message) =>

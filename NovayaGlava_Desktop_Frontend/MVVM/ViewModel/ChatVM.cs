@@ -15,11 +15,13 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Net.Http;
 using System.Net.Http.Json;
+using ClassLibForNovayaGlava_Desktop;
+using ClassLibForNovayaGlava_Desktop.UserModel;
 using Microsoft.AspNetCore.SignalR.Client;
 using NovayaGlava_Desktop_Frontend.FileHandlers;
 using NovayaGlava_Desktop_Frontend.CacheHandlers;
 using NovayaGlava_Desktop_Frontend.Utilities;
-using ClassLibForNovayaGlava_Desktop;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace NovayaGlava_Desktop_Frontend.MVVM.ViewModel
 {
@@ -47,114 +49,112 @@ namespace NovayaGlava_Desktop_Frontend.MVVM.ViewModel
         public RelayCommand OpenFileDialogCommand { get; set; }
         public RelayCommand SaveFileDialogCommand { get; set; }
 
-        UserIdHandler _userIdHandler;
+        CredentialHandler _credential;
         HttpClient _client;
+        public IServiceProvider ServiceProvider { get; set; }
+        IHttpClientFactory _clientFactory;
+
 
         public ChatVM()
         {
-            _client = HttpClientSingleton.Client;
-            _userIdHandler = new UserIdHandler();
-            _connection = ChatHubConnectionHandler.Connection;
+            ServiceProvider = ServiceProviderContainer.ServiceProvider;
+            _clientFactory = ServiceProvider.GetRequiredService<IHttpClientFactory>();
+            _client = _clientFactory.CreateClient("ApiClient");
+            _credential = new CredentialHandler();
 
             Chats = new ObservableCollection<ChatUserModel>();
+            Users = new ObservableCollection<UserModel>();
+            Messages = new ObservableCollection<ChatMessageModel>();
+
+            _connection = ChatHubConnectionHandler.Connection;
+
 
             Task.Run(async () => await GetChatsByIdLocalDb());
 
-            Users = new ObservableCollection<UserModel>();
-
-            Messages = new ObservableCollection<ChatMessageModel>();
-
             SendMessageCommand = new RelayCommand(async o =>
             {
-                // Добавить сообщение в локальную бд
+                
                 await AddMessageLocalDb();
 
-                // Отправить сообщение на сервер сообщений
-                //_server.SendMessageToServer(userIdHandler.GetFromCache(), _selectedUser._id, Message);
-
-
-                // Отправка данных о подключении на локальный сервер
-                //await SendConnectionInformationWithCurrentUserLocalDb();
 
             }); //, o => !string.IsNullOrEmpty(Message) еще это здесь было
 
-            //В этом и проблемаааа
-            //GetChatWithSelectedUserCommand = new RelayCommand(o => GetChatWithSelectedUser());
-
             OpenFileDialogCommand = new RelayCommand(async o => await OpenFileDialog());
-
-            //FriendsList_SelectionChanged = new RelayCommand(o => OnSelectionChanged(this, null));
         }
 
         //Выбранный юзер из списка
         public ChatUserModel SelectedChat
         {
-            get { return _selectedChat; }
+            get => _selectedChat;
             set
             {
                 _selectedChat = value;
-                Task.Run(async () =>
-                {
-                    HttpClient client = new HttpClient();
-                    string userId = _userIdHandler.GetFromCache();
-                    HttpResponseMessage response = await client.GetAsync($"https://localhost:7142/api/connectionIds/getConnectionId/localdb?chatId={_selectedChat._id}&userId={userId}");
-                    if (!response.IsSuccessStatusCode)
-                        MessageBox.Show($"Не удалось получить connectionId к хабу SignalR. Error - {await response.Content.ReadAsStringAsync()}");
-                    else
-                    {
-                        string dbConnectionId = await response.Content.ReadAsStringAsync();
-
-                        // Первое добавление id подключения в локальную бд
-                        if (string.IsNullOrEmpty(dbConnectionId))
-                        {
-                            await SendConnectionInformationWithCurrentUserLocalDb();
-                        }
-
-                        // Если уже подключался ранее
-                        else
-                        {
-                            // Текущий id подключения
-                            ChatHubConnectionHandler chatConnection = new ChatHubConnectionHandler();
-                            string newConnectionId = chatConnection.GetConnectionId();
-
-                            // Если айдишки не равны
-                            if (newConnectionId != dbConnectionId)
-                            {
-                                UpdateConnectionIdModel updateConnectionIdModel = new UpdateConnectionIdModel(_selectedChat._id, newConnectionId, userId);
-                                string jsonUpdateConnectionIdModel = JsonConvert.SerializeObject(updateConnectionIdModel);
-
-                                HttpResponseMessage patchResponse = await client.PatchAsJsonAsync("https://localhost:7142/api/connectionIds/update/localdb", jsonUpdateConnectionIdModel);
-
-                                if (!patchResponse.IsSuccessStatusCode)
-                                    MessageBox.Show($"Не удалось обновить id подключения {await patchResponse.Content.ReadAsStringAsync()}");
-                                else
-                                {
-                                    MessageBox.Show("id подключения успешно обновлён");
-                                }
-                            }
-                        }
-                    }
-                });
-                Task.Run(async () => await GetSelectedChatLocalDb());
+                //Task.Run(async () => await GetSelectedChatLocalDb());
             }
         }
 
         // Получение списка чатов по userId из локальной бд
         private async Task GetChatsByIdLocalDb()
         {
-            string userId = _userIdHandler.GetFromCache();
+            string userId = _credential.GetToken("userId");
+            //string jwt = _credential.GetToken("jwt");
 
-            HttpResponseMessage response = await _client.GetAsync($"https://localhost:7142/api/chat/getChatsByUserId/localdb?userId={userId}");
+            //_client.DefaultRequestHeaders.Add("Authorization", "Bearer " + jwt);
+            HttpResponseMessage response = await _client.GetAsync($"https://localhost:7245/api/chats/get?userId={userId}");
 
             if (!response.IsSuccessStatusCode)
                 MessageBox.Show($"Не удалось получить чаты по след id - [{userId}], {response.StatusCode}");
             else
             {
-                string jsonChats = await response.Content.ReadAsStringAsync();
-                List<ChatUserModel> chats = JsonConvert.DeserializeObject<List<ChatUserModel>>(jsonChats);
+                List<ChatUserModel> chats = await response.Content.ReadFromJsonAsync<List<ChatUserModel>>();
 
                 foreach (ChatUserModel chat in chats)
                     Application.Current.Dispatcher.Invoke(() => Chats.Add(chat));
+            }
+        }
+
+        // Подключиться к хабу ChatHub
+        public async Task ConnectToChutHub()
+        {
+            string userId = _credential.GetToken("userId");
+
+            HttpResponseMessage response = await _client.GetAsync($"https://localhost:7245/api/connectionIds/getConnectionId/localdb?chatId={_selectedChat._id}&userId={userId}");
+
+            if (!response.IsSuccessStatusCode)
+                MessageBox.Show($"Не удалось получить connectionId к хабу SignalR. Error - {await response.Content.ReadAsStringAsync()}");
+            else
+            {
+                string dbConnectionId = await response.Content.ReadAsStringAsync();
+
+                // Первое добавление id подключения в локальную бд
+                if (string.IsNullOrEmpty(dbConnectionId))
+                {
+                    await SendConnectionInformationWithCurrentUserLocalDb();
+                }
+
+                // Если уже подключался ранее
+                else
+                {
+                    // Текущий id подключения
+                    ChatHubConnectionHandler chatConnection = new ChatHubConnectionHandler();
+                    string newConnectionId = chatConnection.GetConnectionId();
+
+                    // Если айдишки не равны
+                    if (newConnectionId != dbConnectionId)
+                    {
+                        UpdateConnectionIdModel updateConnectionIdModel = new UpdateConnectionIdModel(_selectedChat._id, newConnectionId, userId);
+                        string jsonUpdateConnectionIdModel = JsonConvert.SerializeObject(updateConnectionIdModel);
+
+                        HttpResponseMessage patchResponse = await _client.PatchAsJsonAsync("https://localhost:7245/api/connectionIds/update/localdb", jsonUpdateConnectionIdModel);
+
+                        if (!patchResponse.IsSuccessStatusCode)
+                            MessageBox.Show($"Не удалось обновить id подключения {await patchResponse.Content.ReadAsStringAsync()}");
+                        else
+                        {
+                            MessageBox.Show("id подключения успешно обновлён");
+                        }
+                    }
+                }
             }
         }
 
@@ -162,7 +162,7 @@ namespace NovayaGlava_Desktop_Frontend.MVVM.ViewModel
         private async Task GetAllUsersFromLocalDb()
         {
             HttpClient client = new HttpClient();
-            HttpResponseMessage response = await client.GetAsync("https://localhost:7142/api/users/allUsers/localdb");
+            HttpResponseMessage response = await client.GetAsync("https://localhost:7245/api/users/allUsers/localdb");
 
             string jsonUsers = await response.Content.ReadAsStringAsync();
             List<UserModel> users = JsonConvert.DeserializeObject<List<UserModel>>(jsonUsers);
@@ -183,11 +183,11 @@ namespace NovayaGlava_Desktop_Frontend.MVVM.ViewModel
             }
             HttpClient client = new HttpClient();
 
-            string currentUserId = _userIdHandler.GetFromCache();
+            string currentUserId = _credential.GetToken("userId");
             List<string> usersId = new List<string> { currentUserId, _selectedChat.CompanionId };
             string jsonUsersId = JsonConvert.SerializeObject(usersId);
 
-            HttpResponseMessage responseMessage = await client.PostAsJsonAsync("https://localhost:7142/api/chat/addChat/localdb", jsonUsersId);
+            HttpResponseMessage responseMessage = await client.PostAsJsonAsync("https://localhost:7245/api/chat/addChat/localdb", jsonUsersId);
 
             string response = await responseMessage.Content.ReadAsStringAsync();
             if (string.IsNullOrEmpty(response))
@@ -206,7 +206,7 @@ namespace NovayaGlava_Desktop_Frontend.MVVM.ViewModel
             ChatMessageModel messageModel = new ChatMessageModel
             {
                 _id = Guid.NewGuid().ToString(),
-                Author = _userIdHandler.GetFromCache(),
+                Author = _credential.GetToken("userId"),
                 ChatId = _currentChat._id,
                 TimeStamp = DateTime.Now.ToString(),
                 Content = Message,
@@ -219,7 +219,7 @@ namespace NovayaGlava_Desktop_Frontend.MVVM.ViewModel
             };
 
             string jsonMessage = JsonConvert.SerializeObject(messageModel);
-            HttpResponseMessage response = await client.PostAsJsonAsync("https://localhost:7142/api/messages/add/localdb", jsonMessage);
+            HttpResponseMessage response = await client.PostAsJsonAsync("https://localhost:7245/api/messages/add/localdb", jsonMessage);
 
             if (response.StatusCode != HttpStatusCode.OK)
                 MessageBox.Show("Ошибка добавления нового сообщения в локальную бд");
@@ -231,7 +231,7 @@ namespace NovayaGlava_Desktop_Frontend.MVVM.ViewModel
         private async Task GetMessagesByChatIdLocalDb()
         {
             HttpClient client = new HttpClient();
-            HttpResponseMessage response = await client.GetAsync($"https://localhost:7142/api/messages/get/{_currentChat._id}/localdb");
+            HttpResponseMessage response = await client.GetAsync($"https://localhost:7245/api/messages/get/{_currentChat._id}/localdb");
 
             if (response.StatusCode != HttpStatusCode.OK)
                 MessageBox.Show($"Не удалось получить все сообщения чата {_currentChat}");
@@ -290,9 +290,9 @@ namespace NovayaGlava_Desktop_Frontend.MVVM.ViewModel
                 byte[] buffer = new byte[10000000];
                 int bufferLength = await stream.ReadAsync(buffer, 0, buffer.Length);
 
-                AddingFileToServerModel addingFileToServerModel = new AddingFileToServerModel(_userIdHandler.GetFromCache(), buffer, filePath);
+                AddingFileToServerModel addingFileToServerModel = new AddingFileToServerModel(_credential.GetToken("userId"), buffer, filePath);
                 string jsonModel = JsonConvert.SerializeObject(addingFileToServerModel);
-                HttpResponseMessage response = await client.PostAsJsonAsync("https://localhost:7142/api/files/loadFile/localdb", jsonModel);
+                HttpResponseMessage response = await client.PostAsJsonAsync("https://localhost:7245/api/files/loadFile/localdb", jsonModel);
 
                 if (response.IsSuccessStatusCode)
                     MessageBox.Show("Файл успешно добавлен");
@@ -308,11 +308,11 @@ namespace NovayaGlava_Desktop_Frontend.MVVM.ViewModel
                     FileStream stream = new FileStream(filesPath[i], FileMode.Open);
                     byte[] buffer = new byte[100000000];
                     await stream.ReadAsync(buffer, 0, buffer.Length);
-                    addingFileToServerModelList.Add(new AddingFileToServerModel(_userIdHandler.GetFromCache(), buffer, filesPath[i]));
+                    addingFileToServerModelList.Add(new AddingFileToServerModel(_credential.GetToken("userId"), buffer, filesPath[i]));
                 }
 
                 string jsonModel = JsonConvert.SerializeObject(addingFileToServerModelList);
-                HttpResponseMessage response = await client.PostAsJsonAsync("https://localhost:7142/api/files/loadFiles/localdb", jsonModel);
+                HttpResponseMessage response = await client.PostAsJsonAsync("https://localhost:7245/api/files/loadFiles/localdb", jsonModel);
 
                 if (response.IsSuccessStatusCode)
                     MessageBox.Show("Файлы успешно добавлены");
@@ -333,10 +333,10 @@ namespace NovayaGlava_Desktop_Frontend.MVVM.ViewModel
                 MessageBox.Show("Вы не подключены к хабу для обмена сообщениями");
             }
 
-            ConnectionIdModel connectionIdModel = new ConnectionIdModel(_userIdHandler.GetFromCache(), _selectedChat._id, connectionString);
+            ConnectionIdModel connectionIdModel = new ConnectionIdModel(_credential.GetToken("userId"), _selectedChat._id, connectionString);
             string jsonConnectionIdModel = JsonConvert.SerializeObject(connectionIdModel);
 
-            HttpResponseMessage response = await client.PostAsJsonAsync("https://localhost:7142/api/connectionIds/add/localdb", jsonConnectionIdModel);
+            HttpResponseMessage response = await client.PostAsJsonAsync("https://localhost:7245/api/connectionIds/add/localdb", jsonConnectionIdModel);
             if (!response.IsSuccessStatusCode)
                 MessageBox.Show("Не удалось добавить запись с информацией о подключении");
             else

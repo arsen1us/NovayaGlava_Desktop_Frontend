@@ -6,11 +6,11 @@
              xmlns:local="clr-namespace:NovayaGlava_Desktop_Frontend.MVVM.View"
              xmlns:vm="clr-namespace:NovayaGlava_Desktop_Frontend.MVVM.ViewModel"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="900" d:DesignWidth="1000">
     <UserControl.DataContext>
         <vm:ContentVM/>
     </UserControl.DataContext>
-    <Grid>
+    <Grid Background="White">
             
     </Grid>
 </UserControl>

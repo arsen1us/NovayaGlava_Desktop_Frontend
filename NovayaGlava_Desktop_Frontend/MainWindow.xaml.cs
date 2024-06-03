@@ -6,6 +6,11 @@ using System.Windows;
 using NovayaGlava_Desktop_Frontend.CacheHandlers;
 using Microsoft.AspNetCore.SignalR.Client;
 using NovayaGlava_Desktop_Frontend.MVVM.View;
+using NovayaGlava_Desktop_Frontend.MVVM.View.IdentificationPages;
+using System.Windows.Controls;
+using System.Windows.Media.Animation;
+using System.Windows.Input;
+using Microsoft.Extensions.Configuration;
 
 
 namespace NovayaGlava_Desktop_Frontend
@@ -15,56 +20,58 @@ namespace NovayaGlava_Desktop_Frontend
     /// </summary>
     public partial class MainWindow : Window
     {
-        JwtTokenHandler _jwtTokenHandler;
-        UserIdHandler _userIdHandler;
-        HttpClient _client;
-        HubConnection _connection;
+        AuthService _authService;
+        IHttpClientFactory _clientFactory;
+        CredentialHandler _credential;
+        IConfiguration _configuration;
 
-        public MainWindow()
+        private bool _menuIsOpen = false;
+
+        //IServiceProvider ServiceProvider { get; set; }
+
+        public MainWindow(AuthService authService, IHttpClientFactory clientFactory)
         {
             InitializeComponent();
-            _client = HttpClientSingleton.Client;
-            _jwtTokenHandler = new JwtTokenHandler();
-            _userIdHandler = new UserIdHandler();
-            _connection = ChatHubConnectionHandler.Connection;
-            LoadView();
+
+            _authService = authService;
+            _clientFactory = clientFactory;
+
+
+            _authService = new AuthService("https://localhost:7245/api", clientFactory);
+            this.Loaded += MainWindow_Loaded;
+            
         }
 
-        private void LoadView()
+        private async void MainWindow_Loaded(object sender, RoutedEventArgs e) {  }
+            
+
+
+        private void ToggleMenu_Click(object sender, RoutedEventArgs e)
         {
-            bool isDataAvailable = CheckDataInCache();
-            if (isDataAvailable)
+            DoubleAnimation scrollAnimation = new DoubleAnimation
             {
-                HttpClientSingleton.AddAuthorizationHeader(_jwtTokenHandler.GetFromCache());
+                Duration = new Duration(TimeSpan.FromSeconds(0.1))
+            };
 
-                HttpResponseMessage response = Task.Run(async () => await _client.PostAsJsonAsync("https://localhost:7142/api/users/authorize", "")).Result;
-                if (response.StatusCode == HttpStatusCode.OK)
-                {
-                    //Task.Run(async () => await _connection.StartAsync()).Wait();
-                    MessageBox.Show($"Успешное подключение к серверу, id подключения - {_connection.ConnectionId}");
-                    MainFrame.Content = new Wrapper();
-                }
-                else
-                {
-                    MessageBox.Show("Произошла ошибка. Вы не авторизованы. Попробуйте снова");
-                }
+
+            if (_menuIsOpen)
+            {
+                scrollAnimation.From = MenuPanel.ActualWidth;
+                scrollAnimation.To = 0;
+                _menuIsOpen = false;
+                CloseButton.Visibility = Visibility.Hidden;
+                OpenButton.Visibility = Visibility.Visible;
             }
-
-            // Если нет данных в кэше, загружаю окно регистрации/авторизации
             else
             {
-                MainFrame.Content = new RegistrationPage();
+                scrollAnimation.From = MenuPanel.ActualWidth;
+                scrollAnimation.To = 200; // Desired width of the menu
+                _menuIsOpen = true;
+                CloseButton.Visibility = Visibility.Visible;
+                OpenButton.Visibility = Visibility.Hidden;
             }
-        }
 
-        private bool CheckDataInCache()
-        {
-            string token = _jwtTokenHandler.GetFromCache();
-            string userId = _userIdHandler.GetFromCache();
-
-            if (token == null || userId == null)
-                return false;
-            return true;
+            MenuPanel.BeginAnimation(Grid.WidthProperty, scrollAnimation);
         }
 
     }

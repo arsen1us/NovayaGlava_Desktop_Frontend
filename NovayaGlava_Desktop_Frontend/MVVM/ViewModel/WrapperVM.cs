@@ -10,6 +10,9 @@ using NovayaGlava_Desktop_Frontend.FileHandlers;
 using NovayaGlava_Desktop_Frontend.CacheHandlers;
 using NovayaGlava_Desktop_Frontend.Utilities;
 using ClassLibForNovayaGlava_Desktop;
+using System.Windows.Controls;
+using System.Windows.Media.Animation;
+using System.Windows;
 
 
 namespace NovayaGlava_Desktop_Frontend.MVVM.ViewModel
@@ -22,8 +25,6 @@ namespace NovayaGlava_Desktop_Frontend.MVVM.ViewModel
         {
             _client = HttpClientSingleton.Client;
             _hubConnection = ChatHubConnectionHandler.Connection;
-
         }
-
     }
 }
